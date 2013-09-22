@@ -2,8 +2,7 @@
  *
  * This JavaScript is used to upload and remove files.
  * Usage - $('input[type=submit]').fileUpload()
- * This javascript will be used along with template reportaproblem/inc/fileupload.dust
- * 
+ *  * 
  */
 
 define(['jquery', 'jqueryUI'], function($){
@@ -35,8 +34,9 @@ define(['jquery', 'jqueryUI'], function($){
 				this.elements.mainblock =  this.elements.uploadbutton.parents('.fileupload');
 				this.elements.filecontainer = $('<ul> </ul>').addClass('file-container').css('padding', '0');
 				this.elements.progress = $('<span>Please wait, please are loading file(s) ..... </span>').addClass('progress');
-				this.elements.uploaderror = $('<span> </span>').addClass('error');
+				this.elements.uploaderror = $('<div>Total file size for images cannot exceed 5 MB.</div>').addClass('error').hide();
 				this.elements.mainblock.append(this.elements.progress);
+				this.elements.mainblock.append(this.elements.uploaderror);
 				this.elements.mainblock.append(this.elements.filecontainer);
 			},
 			_styleElements : function(){
@@ -47,6 +47,11 @@ define(['jquery', 'jqueryUI'], function($){
 					'padding': '0 20px'})
 				.hide();
 				this.elements.filecontainer.find('li').css({'padding' : '0', 'list-style' : 'none'});
+				this.elements.uploaderror.css({
+												'background' : 'url("images/error.png") no-repeat 0 0',
+												'padding' : '0 0 0 30px',
+												'margin' : '10px 0'
+				});
 			},
 			_createForm: function(){
 				var form = $('<form method="post" style="left:-9999px;position:absolute;"/>'),
@@ -118,8 +123,10 @@ define(['jquery', 'jqueryUI'], function($){
 
 						if(filesize > maxfilesize){
 							this.elements.uploaderror.show();
+							this._updatePosition();
 							return false;
 						}
+
 					}
 					this.elements.uploaderror.hide();
 					this.elements.progress.show(); 
