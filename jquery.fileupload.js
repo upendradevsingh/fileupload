@@ -1,4 +1,4 @@
-**
+/**
  *
  * This JavaScript is used to upload and remove files.
  * Usage - $('input[type=submit]').fileUpload()
@@ -6,7 +6,8 @@
  * 
  */
 
-(function($) {
+ define(['jquery', 'jqueryUI'], function($){
+
 		$.widget('FU.fileupload',{
 			options:{
 				upload_url: '',
@@ -139,4 +140,5 @@
 				.fail(function(){});
 			}		
 		});		
-}(jQuery));
+
+});

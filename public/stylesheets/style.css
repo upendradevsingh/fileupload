@@ -1,0 +1,18 @@
+body {
+  padding: 50px;
+  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+  background: url('../images/Desert.jpg');
+}
+a {
+  color: #00B7FF;
+}
+input[type="submit"] {
+  -moz-appearance: none;
+  background-color: #FFFFFF;
+  border: medium none;
+  color: #0289FF;
+  cursor: default;
+  text-decoration: underline;
+  width: auto;
+  padding: 0;
+}
