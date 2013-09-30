@@ -72,8 +72,6 @@ define(['jquery', 'jqueryUI'], function($){
 				this.elements.mainblock.append(this.elements.progress);
 				this.elements.mainblock.append(this.elements.uploaderror);
 				this.elements.mainblock.append(this.elements.filecontainer);
-
-				alert('im called CE');
 			},
 			_styleElements : function(){
 				this.elements.progress.css({'background' : 'url("images/ajax-loader.gif") no-repeat 0 0',  
@@ -178,8 +176,6 @@ define(['jquery', 'jqueryUI'], function($){
 					this.elements.uploaderror.hide();
 					this.elements.progress.show(); 
 				//	this.element.hide();
-
-					alert(this.options.isAjax);
 
 					if(!this.options.isAjax)
 						this.elements.form.submit();
