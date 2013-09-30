@@ -4,7 +4,8 @@ var express = require('express')
   , routes = require('./routes')
   , http = require('http')
   , path = require('path')
-  ,test = require('./routes/upload');
+  , upload = require('./routes/upload')
+  , remove =  require('./routes/delete');
 
 var app = express();
 
@@ -73,9 +74,6 @@ var SampleApp = function() {
         self.routes['/'] = routes.index;
       //  self.routes['/upload'] = routes.upload;
 
-        console.log(test);
-
-        
     };
 
 
@@ -90,10 +88,10 @@ var SampleApp = function() {
         //  Add handlers for the app (from the routes).
         for (var r in self.routes) {
             app.get(r, self.routes[r]);
-            console.log(r);
         }
 
-        app.post('/upload', test);
+        app.post('/upload', upload);
+        app.post('/remove', remove);
     };
 
 
