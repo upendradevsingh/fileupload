@@ -1,5 +1,5 @@
 {
-  "name": "FileUpload",
+  "name": "fileupload",
   "version": "1.0.0",
   "description": "File Upload jQuery Plugin",
   "keywords": [
@@ -11,28 +11,30 @@
   "author": {
     "name": "Upendra Dev Singh",
     "email": "upen_singh@live.com",
-    "url":  "http://www.usingh.in/"
+    "url": "http://www.usingh.in/"
   },
   "homepage": "http://www.usingh.in/",
   "repository": {
-    "type": "git"    
+    "type": "git"
   },
-
   "engines": {
     "node": ">= 0.6.0",
     "npm": ">= 1.0.0"
   },
   "dependencies": {
-	 "express": "3.3.4",
- 	 "hjs": "*",
-	"less-middleware": "*"
+    "express": "3.3.4",
+    "hjs": "*",
+    "less-middleware": "*"
   },
-  "scripts":{
-  	"start":"node app.js"
+  "scripts": {
+    "start": "node app.js"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "grunt": "~0.4.1",
+    "grunt-contrib-jshint": "~0.6.4",
+    "grunt-contrib-uglify": "~0.2.4"
+  },
   "bundleDependencies": [],
-
   "private": true,
   "main": "app.js"
 }

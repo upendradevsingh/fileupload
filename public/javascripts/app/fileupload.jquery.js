@@ -1,42 +1,65 @@
+/** ===================================================
+ * fileupload.jquery.js v1.0.0
+ * http://github.com/upendradevsingh/fileupload
+ * ===================================================
+ * Copyright (c) 2013 upendradevsingh
+ *
+ * Licensed under the MIT  License.
+ * you may not use this file except in compliance with the License.
+ *
+ * ========================================================== */
+
 /**
  *
- * This JavaScript is used to upload and remove files.
- * Usage - $('input[type=submit]').fileUpload()
- *  * 
+ * This JavaScript is used to upload and remove files via ajax.
+ * Usage - HTML
+ *	<div class="fileupload">
+ *		<input name="uploadfile" id="name" type="file" />
+ *		<input type="submit" name="UplodFile" value="Upload File" />
+ *	</div>
+ *
+ *	Javascript:
+ *		$('input[type=submit]').fileUpload();
+ *   
  */
 
 define(['jquery', 'jqueryUI'], function($){
+		'use strict';
 		$.widget('FU.fileupload',{
 			options:{
+				fieldName:'',
 				errorClass : '',
 				serverErrorMsg: '',
-				fileExtnErrMsg: '',
-				maxLimitErrMsg: '',
+				fileExtnErrMsg: 'File type is not support. It should be any of the following type [gif, png , jpg , pdf].',
+				maxLimitErrMsg: 'Total file size for images cannot exceed 5 MB.',
+				loadingMsg: 'Please wait, please are loading file(s) ..... ',
 				isAjax : false,
 				upload_url: '/upload',
 				remove_url: '/remove'
 			},			
 			_init: function() {
 				var self = this;
-				
 				this._isFormDataSupproted();
 
-
 				//Removing file input already placed in doc for non-js support
-				if($('input[type=file]').length > 0 && !this.options.isAjax)
+
+				if($('input[type=file]').length > 0 && !this.options.isAjax){
+					this.options.fieldName = $(this.element).parents('form').find('input[type=file]').attr('name');
 					$('input[type=file]').remove();
+				}
+					
 
 				if(this.options.isAjax){
 					this._prepareUI();
 					this._decorateButton();
 					this._addListeners();
-					this._styleElements()
+					this._styleElements();
 				}else{
 					
 					this._createElements();
 					this._styleElements();
 
-		 			$('body').append(this.elements.form);
+					$('body').append(this.elements.form);
 					this._addListeners();
 					this._updatePosition();
 					this._decorateButton();
@@ -49,14 +72,11 @@ define(['jquery', 'jqueryUI'], function($){
 				this.elements.fileinput = this.elements.form.find('input[type="file"]');
 				this.elements.mainblock =  this.elements.uploadbutton.parents('.fileupload');
 				this.elements.filecontainer = $('<ul> </ul>').addClass('file-container').css('padding', '0');
-				this.elements.progress = $('<span>Please wait, please are loading file(s) ..... </span>').addClass('progress');
-				this.elements.uploaderror = $('<div>Total file size for images cannot exceed 5 MB.</div>').addClass('error').hide();
+				this.elements.progress = $('<span></span>').html(this.options.loadingMsg).addClass('progress');
+				this.elements.uploaderror = $('<div></div>').html(this.options.maxLimitErrMsg).addClass('error').hide();
 				this.elements.mainblock.append(this.elements.progress);
 				this.elements.mainblock.append(this.elements.uploaderror);
 				this.elements.mainblock.append(this.elements.filecontainer);
-
-				console.log("********88_prepareUI************");
-
 
 			},
 			_createElements: function(){
@@ -76,8 +96,8 @@ define(['jquery', 'jqueryUI'], function($){
 			_styleElements : function(){
 				this.elements.progress.css({'background' : 'url("images/ajax-loader.gif") no-repeat 0 0',  
 					'display': 'block',
-    				'height' : '20px',
-				    'margin' : '10px 0',
+					'height' : '20px',
+					'margin' : '10px 0',
 					'padding': '0 20px'})
 				.hide();
 				this.elements.filecontainer.find('li').css({'padding' : '0', 'list-style' : 'none'});
@@ -88,12 +108,13 @@ define(['jquery', 'jqueryUI'], function($){
 				});
 			},
 			_createForm: function(){
+				var that = this;
 				var form = $('<form method="post" style="left:-9999px;position:absolute;"/>'),
-				 	uploadFile = $('<input size="1" type="file" name="uploadfile" multiple style="z-index:9999;">'),
+					uploadFile = $('<input size="1" type="file" name="uploadfile" multiple style="z-index:9999;">'),
 					formAction =$('<input type="hidden" name="_eventId_UploadDoc" value="Upload file"/>'),
-				 	uploadFrame = $('<iframe style="visibility: hidden;"></iframe>');
-					uploadFrame.attr({"name": "UploadFrame_" + this.element.attr('id'),
-										"id": "UploadFrame_" + this.element.attr('id')});
+					uploadFrame = $('<iframe style="visibility: hidden;" name="UploadFrame_' + that.options.fieldName +'"></iframe>');
+				/*	uploadFrame.attr({"name": "UploadFrame_" + this.element.attr('id'),
+										"id": "UploadFrame_" + this.element.attr('id')}); */
 					uploadFile.attr("id", "uf_"+ this.element.attr('id'));
 					form.attr("id", "FileUploadForm_" + this.element.attr('id'));
 					form.attr({'enctype' : 'multipart/form-data','target' : uploadFrame.attr('name'), 'action': this.options.upload_url})
@@ -104,10 +125,7 @@ define(['jquery', 'jqueryUI'], function($){
 			},
 			_loadAjax : function(){
 				var data = new FormData(this.elements.form.get(0));
-				
-				    data.append("uploadfile", this.options.fileinput);
-			
-			console.log('called for IE too');
+				data.append("uploadfile", this.options.fileinput);
 				return data;
 			},
 			_isFormDataSupproted : function(){
@@ -116,8 +134,8 @@ define(['jquery', 'jqueryUI'], function($){
 			_decorateButton: function(){
 				//Setting up the dimensions and styles 
 				this.elements.fileinput.width(this.elements.uploadbutton.width())
-									   .height(this.elements.uploadbutton.css('height'))
-									   .css({'opacity':'0','font-size':'9px', 'cursor': 'pointer', 'z-index' : '9999', 'position' : 'relative'});
+										.height(this.elements.uploadbutton.css('height'))
+										.css({'opacity':'0','font-size':'9px', 'cursor': 'pointer', 'z-index' : '9999', 'position' : 'relative'});
 				this.elements.uploadbutton.css({'cursor': 'default', 'position' : 'relative', 'left' : -this.elements.uploadbutton.width()});
 			},
 			_updatePosition: function(){
@@ -127,10 +145,10 @@ define(['jquery', 'jqueryUI'], function($){
 			_addListeners: function(){
 					var self =  this;
 					//Setting up onchange event - which validates the files to be uploaded and submit the form to iframe
-					self.elements.fileinput.on('change',function(e){self._upload(e, this)});
+					self.elements.fileinput.on('change',function(e){self._upload(e, this);});
 		
 					//These lines will be called on frame load
-					if(!this.options.isAjax)self.elements.frame.on('load', self.elements.frame, function(){ self.loadFiles(this)}); 
+					if(!this.options.isAjax)self.elements.frame.on('load', self.elements.frame, function(){ self.loadFiles(this);}); 
 					
 					// Binding click event with remove buttons
 					self.elements.filecontainer.on('click', '.f-remove', function(e){self.removeFile(e);});
@@ -141,12 +159,13 @@ define(['jquery', 'jqueryUI'], function($){
 
 			},
 			_upload: function(event, elem){
-				var _this = this;
+				var _this = this,
+					ext;
 					//Check for IE
-					if(_this.isIE){
-						var ext = $(elem).val().split('.').pop().toLowerCase();
+					if(_this.isIE()){
+						ext = $(elem).val().split('.').pop().toLowerCase();
 							if($.inArray(ext, ['gif','png','jpg','pdf']) == -1) {
-								this.elements.uploaderror.show();
+								this.elements.uploaderror.html(this.options.fileExtnErrMsg).show();
 								this._updatePosition();
 								return false;
 							}
@@ -155,11 +174,11 @@ define(['jquery', 'jqueryUI'], function($){
 							filesize = 0,
 							maxfilesize = 4194304;
 						for(var i=0; i<totalfiles; i++){
-							var ext = elem.files[i].name.split('.').pop().toLowerCase();
+							ext = elem.files[i].name.split('.').pop().toLowerCase();
 							if($.inArray(ext, ['gif','png','jpg','pdf']) == -1) {
-									this.elements.uploaderror.show();
+									this.elements.uploaderror.html(this.options.fileExtnErrMsg).show();
 									this._updatePosition();
-								    return false;
+									return false;
 							}
 							filesize = filesize + elem.files[i].size;
 						}
@@ -167,30 +186,27 @@ define(['jquery', 'jqueryUI'], function($){
 						//File size should not exceed 4MB = 4*1024*1024
 
 						if(filesize > maxfilesize){
-							this.elements.uploaderror.show();
+							this.elements.uploaderror.html(this.options.maxLimitErrMsg).show();
 							this._updatePosition();
 							return false;
 						}
-
 					}
 					this.elements.uploaderror.hide();
 					this.elements.progress.show(); 
-				//	this.element.hide();
-
+				
 					if(!this.options.isAjax)
 						this.elements.form.submit();
 					else{
 						$.ajax({  
-					        url: this.options.upload_url,  
-					        type: "POST",  
-					        data: this._loadAjax(),  
-					        processData: false,  
-					        contentType: false,  
-					        success: function (res) {  
-					            console.log(res); 
-					            _this.showResponse(res);
-					        }  
-					    });  
+							url: this.options.upload_url,  
+							type: "POST",  
+							data: this._loadAjax(),  
+							processData: false,  
+							contentType: false,  
+							success: function (res) {  
+								_this.showResponse(res);
+							}  
+						});  
 					}
 			},
 			loadFiles: function(elem){
@@ -235,11 +251,11 @@ define(['jquery', 'jqueryUI'], function($){
 					span = $('<span> </span>').addClass('f-remove').
 							css({
 								'background': 'url("images/delete.png") no-repeat right center',
-							    'display': 'block',
-							    'float': 'right',
-							    'height': '100%',
-							    'width': '16px',
-							    'cursor' : 'pointer'
+								'display': 'block',
+								'float': 'right',
+								'height': '100%',
+								'width': '16px',
+								'cursor' : 'pointer'
 							}).appendTo(div);
 				return div.css({
 					'position' : 'absolute',
@@ -251,15 +267,13 @@ define(['jquery', 'jqueryUI'], function($){
 					'top' : '0',
 					'margin-left' : '-10px',
 					'padding-right' : '10px'
-
 				});
 			},
 			_refreshContainerAfterUpload : function(){
 				// Remove block hover action
-
-					this.elements.filecontainer
+				this.elements.filecontainer
 						.find('li div')
-							.hover( function(){
+						.hover( function(){
 									$(this).css('opacity' , '0.6');
 								}, function(){
 									$(this).css('opacity' , '0');
@@ -274,8 +288,6 @@ define(['jquery', 'jqueryUI'], function($){
 				else{
 					data = $(res); //.find('.file-details');
 				} 
-
-				console.log(data);
 
 				$(data).each(function(index){
 								var text = $.trim($(this).html()),
@@ -301,7 +313,6 @@ define(['jquery', 'jqueryUI'], function($){
 
 			},
 			isIE : function(){
-
 				return window.userAgent.indexOf('MSIE') > 0;
 			}
 		});		
